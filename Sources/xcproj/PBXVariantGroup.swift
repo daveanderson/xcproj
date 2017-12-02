@@ -10,6 +10,9 @@ final public class PBXVariantGroup: PBXObject, Hashable {
 
     /// The filename
     public var name: String?
+    
+    /// The path (optional)
+    public var path: String?
 
     /// Variant group source tree.
     public var sourceTree: PBXSourceTree?
@@ -26,9 +29,11 @@ final public class PBXVariantGroup: PBXObject, Hashable {
     public init(reference: String,
                 children: [String] = [],
                 name: String? = nil,
+                path: String? = nil,
                 sourceTree: PBXSourceTree? = nil) {
         self.children = children
         self.name = name
+        self.path = path
         self.sourceTree = sourceTree
         super.init(reference: reference)
     }
@@ -38,6 +43,7 @@ final public class PBXVariantGroup: PBXObject, Hashable {
     fileprivate enum CodingKeys: String, CodingKey {
         case children
         case name
+        case path
         case sourceTree
         case reference
     }
@@ -46,6 +52,7 @@ final public class PBXVariantGroup: PBXObject, Hashable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.children = try container.decodeIfPresent([String].self, forKey: .children) ?? []
         self.name = try container.decodeIfPresent(String.self, forKey: .name)
+        self.path = try container.decodeIfPresent(String.self, forKey: .path)
         self.sourceTree = try container.decodeIfPresent(PBXSourceTree.self, forKey: .sourceTree)
         try super.init(from: decoder)
     }
@@ -57,6 +64,7 @@ final public class PBXVariantGroup: PBXObject, Hashable {
         return lhs.reference == rhs.reference &&
         lhs.children == rhs.children &&
         lhs.name == rhs.name &&
+        lhs.path == rhs.path &&
         lhs.sourceTree == rhs.sourceTree
     }
 }
@@ -69,6 +77,9 @@ extension PBXVariantGroup: PlistSerializable {
         dictionary["isa"] = .string(CommentedString(PBXVariantGroup.isa))
         if let name = name {
             dictionary["name"] = .string(CommentedString(name))
+        }
+        if let name = path {
+            dictionary["path"] = .string(CommentedString(name))
         }
         if let sourceTree = sourceTree {
             dictionary["sourceTree"] = sourceTree.plist()
